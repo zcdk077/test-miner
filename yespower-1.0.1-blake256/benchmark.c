@@ -73,13 +73,13 @@ int main(int argc, const char * const *argv)
 		uint8_t u8[80];
 		uint32_t u32[20];
 	} src;
-	yespower_binary_t dst;
+	yespower_binary_t_b256 dst;
 	unsigned int i;
 
 	for (i = 0; i < sizeof(src); i++)
 		src.u8[i] = i * 3;
 
-	if (yespower_tls(src.u8, sizeof(src), &params, &dst)) {
+	if (yespower_tls_b256(src.u8, sizeof(src), &params, &dst)) {
 		puts("FAILED");
 		return 1;
 	}
@@ -95,7 +95,7 @@ int main(int argc, const char * const *argv)
 	unsigned int n;
 	unsigned long long count;
 #ifdef _OPENMP
-	yespower_binary_t save[NSAVE];
+	yespower_binary_t_b256 save[NSAVE];
 	unsigned int nsave = 0;
 #endif
 	uint32_t seed = start * 1812433253U;
@@ -104,13 +104,13 @@ int main(int argc, const char * const *argv)
 	count = 0;
 	do {
 		for (i = 0; i < n; i++) {
-			yespower_binary_t *p = &dst;
+			yespower_binary_t_b256 *p = &dst;
 #ifdef _OPENMP
 			if (nsave < NSAVE)
 				p = &save[nsave++];
 #endif
 			src.u32[19] = seed + (count + i);
-			if (yespower_tls(src.u8, sizeof(src), &params, p)) {
+			if (yespower_tls_b256(src.u8, sizeof(src), &params, p)) {
 				puts("FAILED");
 				return 1;
 			}
@@ -188,7 +188,7 @@ int main(int argc, const char * const *argv)
 
 			uint64_t start1 = time_us();
 
-			if (yespower_tls(src.u8, sizeof(src), &params, &dst)) {
+			if (yespower_tls_b256(src.u8, sizeof(src), &params, &dst)) {
 #pragma omp critical
 				puts("FAILED");
 			}
