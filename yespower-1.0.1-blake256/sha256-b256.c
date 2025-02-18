@@ -29,10 +29,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "insecure_memzero.h"
-#include "sysendian.h"
+#include "insecure_memzero-b256.h"
+#include "sysendian-b256.h"
 
-#include "sha256.h"
+#include "sha256-b256.h"
 
 #ifdef __ICC
 /* Miscompile with icc 14.0.0 (at least), so don't use restrict there */
@@ -476,12 +476,12 @@ HMAC_SHA256_Final(uint8_t digest[32], HMAC_SHA256_CTX * ctx)
 }
 
 /**
- * HMAC_SHA256_Buf(K, Klen, in, len, digest):
+ * HMAC_SHA256_Buf_B256(K, Klen, in, len, digest):
  * Compute the HMAC-SHA256 of ${len} bytes from ${in} using the key ${K} of
  * length ${Klen}, and write the result to ${digest}.
  */
 void
-HMAC_SHA256_Buf(const void * K, size_t Klen, const void * in, size_t len,
+HMAC_SHA256_Buf_B256(const void * K, size_t Klen, const void * in, size_t len,
     uint8_t digest[32])
 {
 	HMAC_SHA256_CTX ctx;
@@ -526,12 +526,12 @@ SHA256_Pad_Almost(SHA256_CTX * ctx, uint8_t len[static restrict 8],
 }
 
 /**
- * PBKDF2_SHA256(passwd, passwdlen, salt, saltlen, c, buf, dkLen):
+ * PBKDF2_SHA256_B256(passwd, passwdlen, salt, saltlen, c, buf, dkLen):
  * Compute PBKDF2(passwd, salt, c, dkLen) using HMAC-SHA256 as the PRF, and
  * write the output to buf.  The value dkLen must be at most 32 * (2^32 - 1).
  */
 void
-PBKDF2_SHA256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
+PBKDF2_SHA256_B256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
     size_t saltlen, uint64_t c, uint8_t * buf, size_t dkLen)
 {
 	HMAC_SHA256_CTX Phctx, PShctx, hctx;
