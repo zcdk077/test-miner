@@ -454,7 +454,7 @@ static void smix(uint32_t *B, size_t r, uint32_t N,
  *
  * Return 0 on success; or -1 on error.
  */
-int yespower(yespower_local_t *local,
+int yespower_b256(yespower_local_t *local,
     const uint8_t *src, size_t srclen,
     const yespower_params_t *params, yespower_binary_t_b256 *dst)
 {
