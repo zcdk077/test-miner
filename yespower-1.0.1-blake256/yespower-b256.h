@@ -121,7 +121,7 @@ extern int yespower(yespower_local_t *local,
  * MT-safe as long as dst is local to the thread.
  */
 extern int yespower_tls_b256(const uint8_t *src, size_t srclen,
-    const yespower_params_t *params, yespower_binary_t *dst);
+    const yespower_params_t *params, yespower_binary_t_b256 *dst);
 
 #ifdef __cplusplus
 }
