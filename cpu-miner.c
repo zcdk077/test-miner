@@ -270,6 +270,7 @@ Options:\n\
                           yespowerLNC    LTNCG (LightningCashGold)\n\
                           yespowerMGPC   MGPC (Magpiecoin)\n\
                           yespowerR16    YTN (Yenten)\n\
+                          yespowerR32    DME (Dogemone)\n\
                           yespowerSUGAR  SUGAR (Sugarchain)\n\
                           yespowerTIDE   TDC (Tidecoin)\n\
                           yespowerURX    URX (UraniumX)\n\
@@ -1799,6 +1800,7 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 			case ALGO_YESCRYPTR32:
 			case ALGO_YESPOWER:
 			case ALGO_YESPOWERR16:
+			case ALGO_YESPOWERR32:
 			case ALGO_YESPOWERIC:
 			case ALGO_YESPOWERIOTS:
 			case ALGO_YESPOWERITC:
@@ -2162,6 +2164,7 @@ static void *miner_thread(void *userdata)
 			case ALGO_POWER2B:
 			case ALGO_YESPOWER:
 			case ALGO_YESPOWERR16:
+			case ALGO_YESPOWERR32:
 			case ALGO_YESPOWERIC:
 			case ALGO_YESPOWERIOTS:
 			case ALGO_YESPOWERITC:
@@ -2499,6 +2502,9 @@ static void *miner_thread(void *userdata)
 			break;
 		case ALGO_YESPOWERR16:
 			rc = scanhash_yespowerR16(thr_id, &work, max_nonce, &hashes_done);
+			break;
+		case ALGO_YESPOWERR32:
+			rc = scanhash_yespowerR32(thr_id, &work, max_nonce, &hashes_done);
 			break;
 		case ALGO_YESPOWERLITB:
 			rc = scanhash_yespowerLITB(thr_id, &work, max_nonce, &hashes_done);
