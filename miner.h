@@ -607,6 +607,7 @@ void yescrypthash(void *output, const void *input);
 void yescrypt_hash_r8(const char* input, char* output, uint32_t len);
 void yescrypt_hash_r16(const char* input, char* output, uint32_t len);
 void yescrypt_hash_r32(const char* input, char* output, uint32_t len);
+void yespowerR32_hash(const char *input, char *output, uint32_t len);
 void zr5hash_pok(void *output, uint32_t *pdata);
 
 
