@@ -419,7 +419,7 @@ static inline uint32_t blockmix_salsa_xor(const salsa20_blk_t *restrict Bin1,
 #define PWXbytes (PWXgather * PWXsimple * 8)
 
 /* (Maybe-)runtime derived values.  Not tunable on their own. */
-#define Swidth_to_Sbytes1_P256(Swidth) ((1 << (Swidth)) * PWXsimple * 8)
+#define Swidth_to_Sbytes1_B256(Swidth) ((1 << (Swidth)) * PWXsimple * 8)
 #define Swidth_to_Smask(Swidth) (((1 << (Swidth)) - 1) * PWXsimple * 8)
 #define Smask_to_Smask2(Smask) (((uint64_t)(Smask) << 32) | (Smask))
 
