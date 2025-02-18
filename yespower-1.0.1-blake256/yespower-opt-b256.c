@@ -1152,8 +1152,13 @@ fail:
 int yespower_tls_b256(const uint8_t *src, size_t srclen,
     const yespower_params_t *params, yespower_binary_t_b256 *dst)
 {
+#if defined(_MSC_VER)
+	static __declspec(thread) int initialized = 0;
+	static __declspec(thread) yespower_local_t local;
+#else
 	static __thread int initialized = 0;
 	static __thread yespower_local_t local;
+#endif
 
 	if (!initialized) {
 		init_region(&local);
