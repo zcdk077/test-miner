@@ -94,13 +94,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "insecure_memzero.h"
-#include "sha256.h"
-#include "sysendian.h"
+#include "insecure_memzero-b256.h"
+#include "sha256-b256.h"
+#include "sysendian-b256.h"
 
-#include "yespower.h"
+#include "yespower-b256.h"
 
-#include "yespower-platform.c"
+#include "yespower-platform-b256.c"
 
 #if __STDC_VERSION__ >= 199901L
 /* Have restrict */
@@ -405,7 +405,7 @@ static inline uint32_t blockmix_salsa_xor(const salsa20_blk_t *restrict Bin1,
 }
 
 #if _YESPOWER_OPT_C_PASS_ == 1
-/* This is tunable, but it is part of what defines a yespower version */
+/* This is tunable, but it is part of what defines a yespower_b256 version */
 /* Version 0.5 */
 #define Swidth_0_5 8
 /* Version 1.0 */
@@ -419,7 +419,7 @@ static inline uint32_t blockmix_salsa_xor(const salsa20_blk_t *restrict Bin1,
 #define PWXbytes (PWXgather * PWXsimple * 8)
 
 /* (Maybe-)runtime derived values.  Not tunable on their own. */
-#define Swidth_to_Sbytes1(Swidth) ((1 << (Swidth)) * PWXsimple * 8)
+#define Swidth_to_Sbytes1_P256(Swidth) ((1 << (Swidth)) * PWXsimple * 8)
 #define Swidth_to_Smask(Swidth) (((1 << (Swidth)) - 1) * PWXsimple * 8)
 #define Smask_to_Smask2(Smask) (((uint64_t)(Smask) << 32) | (Smask))
 
@@ -1014,22 +1014,22 @@ static void smix(uint8_t *B, size_t r, uint32_t N,
 #define blockmix_xor_save blockmix_xor_save_1_0
 #define smix1 smix1_1_0
 #define smix2 smix2_1_0
-#define smix smix_1_0
-#include "yespower-opt.c"
+#define smix smix_1_0_b256
+#include "yespower-opt-b256.c"
 #undef smix
 
 /**
- * yespower(local, src, srclen, params, dst):
- * Compute yespower(src[0 .. srclen - 1], N, r), to be checked for "< target".
+ * yespower_b25(local, src, srclen, params, dst):
+ * Compute yespower_b256(src[0 .. srclen - 1], N, r), to be checked for "< target".
  * local is the thread-local data structure, allowing to preserve and reuse a
  * memory allocation across calls, thereby reducing its overhead.
  *
  * Return 0 on success; or -1 on error.
  */
-int yespower(yespower_local_t *local,
+int yespower_b256(yespower_local_t *local,
     const uint8_t *src, size_t srclen,
     const yespower_params_t *params,
-    yespower_binary_t *dst)
+    yespower_binary_t_b256 *dst)
 {
 	yespower_version_t version = params->version;
 	uint32_t N = params->N;
@@ -1042,9 +1042,10 @@ int yespower(yespower_local_t *local,
 	salsa20_blk_t *V, *XY;
 	pwxform_ctx_t ctx;
 	uint8_t sha256[32];
+	uint8_t blake256[32];
 
 	/* Sanity-check parameters */
-	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0) ||
+	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0 && version != YESPOWER_1_0_BLAKE256) ||
 	    N < 1024 || N > 512 * 1024 || r < 8 || r > 32 ||
 	    (N & (N - 1)) != 0 ||
 	    (!pers && perslen)) {
@@ -1058,11 +1059,15 @@ int yespower(yespower_local_t *local,
 	if (version == YESPOWER_0_5) {
 		XY_size = B_size * 2;
 		Swidth = Swidth_0_5;
-		ctx.Sbytes = 2 * Swidth_to_Sbytes1(Swidth);
-	} else {
+		ctx.Sbytes = 2 * Swidth_to_Sbytes1_B256(Swidth);
+	} else if (version == YESPOWER_1_0) {
 		XY_size = B_size + 64;
 		Swidth = Swidth_1_0;
-		ctx.Sbytes = 3 * Swidth_to_Sbytes1(Swidth);
+		ctx.Sbytes = 3 * Swidth_to_Sbytes1_B256(Swidth);
+	} else if (version == YESPOWER_1_0_BLAKE256) {
+		XY_size = B_size + 64;
+		Swidth = Swidth_1_0;
+		ctx.Sbytes = 3 * Swidth_to_Sbytes1_B256(Swidth);
 	}
 	need = B_size + V_size + XY_size + ctx.Sbytes;
 	if (local->aligned_size < need) {
@@ -1076,25 +1081,27 @@ int yespower(yespower_local_t *local,
 	XY = (salsa20_blk_t *)((uint8_t *)V + V_size);
 	S = (uint8_t *)XY + XY_size;
 	ctx.S0 = S;
-	ctx.S1 = S + Swidth_to_Sbytes1(Swidth);
+	ctx.S1 = S + Swidth_to_Sbytes1_B256(Swidth);
 
-	SHA256_Buf(src, srclen, sha256);
+	// SHA256_Buf(src, srclen, sha256);
 
 	if (version == YESPOWER_0_5) {
-		PBKDF2_SHA256(sha256, sizeof(sha256), src, srclen, 1,
+		SHA256_Buf(src, srclen, sha256);
+		PBKDF2_SHA256_B256(sha256, sizeof(sha256), src, srclen, 1,
 		    B, B_size);
 		memcpy(sha256, B, sizeof(sha256));
 		smix(B, r, N, V, XY, &ctx);
-		PBKDF2_SHA256(sha256, sizeof(sha256), B, B_size, 1,
+		PBKDF2_SHA256_B256(sha256, sizeof(sha256), B, B_size, 1,
 		    (uint8_t *)dst, sizeof(*dst));
 
 		if (pers) {
-			HMAC_SHA256_Buf(dst, sizeof(*dst), pers, perslen,
+			HMAC_SHA256_Buf_B256(dst, sizeof(*dst), pers, perslen,
 			    sha256);
 			SHA256_Buf(sha256, sizeof(sha256), (uint8_t *)dst);
 		}
-	} else {
-		ctx.S2 = S + 2 * Swidth_to_Sbytes1(Swidth);
+	} else if (version == YESPOWER_1_0) {
+		SHA256_Buf(src, srclen, sha256);
+		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256(Swidth);
 		ctx.w = 0;
 
 		if (pers) {
@@ -1104,11 +1111,27 @@ int yespower(yespower_local_t *local,
 			srclen = 0;
 		}
 
-		PBKDF2_SHA256(sha256, sizeof(sha256), src, srclen, 1, B, 128);
+		PBKDF2_SHA256_B256(sha256, sizeof(sha256), src, srclen, 1, B, 128);
 		memcpy(sha256, B, sizeof(sha256));
-		smix_1_0(B, r, N, V, XY, &ctx);
-		HMAC_SHA256_Buf(B + B_size - 64, 64,
+		smix_1_0_b256(B, r, N, V, XY, &ctx);
+		HMAC_SHA256_Buf_B256(B + B_size - 64, 64,
 		    sha256, sizeof(sha256), (uint8_t *)dst);
+	} else if (version == YESPOWER_1_0_BLAKE256) {
+		blake256_hash(blake2b, src, srclen);
+		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256(Swidth);
+		ctx.w = 0;
+
+		if (pers) {
+			src = pers;
+			srclen = perslen;
+		} else {
+			srclen = 0;
+		}
+
+		pbkdf2_blake256(blake256, sizeof(blake256), src, srclen, 1, B, 128);
+		memcpy(blake256, B, sizeof(blake256));
+		smix_1_0_p2b(B, r, N, V, XY, &ctx);
+		hmac_blake256_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
 	}
 
 	/* Success! */
@@ -1120,14 +1143,14 @@ fail:
 }
 
 /**
- * yespower_tls(src, srclen, params, dst):
- * Compute yespower(src[0 .. srclen - 1], N, r), to be checked for "< target".
+ * yespower_tls_b256(src, srclen, params, dst):
+ * Compute yespower_b256(src[0 .. srclen - 1], N, r), to be checked for "< target".
  * The memory allocation is maintained internally using thread-local storage.
  *
  * Return 0 on success; or -1 on error.
  */
-int yespower_tls(const uint8_t *src, size_t srclen,
-    const yespower_params_t *params, yespower_binary_t *dst)
+int yespower_tls_b256(const uint8_t *src, size_t srclen,
+    const yespower_params_t *params, yespower_binary_t_b256 *dst)
 {
 	static __thread int initialized = 0;
 	static __thread yespower_local_t local;
@@ -1137,16 +1160,16 @@ int yespower_tls(const uint8_t *src, size_t srclen,
 		initialized = 1;
 	}
 
-	return yespower(&local, src, srclen, params, dst);
+	return yespower_b256(&local, src, srclen, params, dst);
 }
 
-int yespower_init_local(yespower_local_t *local)
+int yespower_init_local_b256(yespower_local_t *local)
 {
 	init_region(local);
 	return 0;
 }
 
-int yespower_free_local(yespower_local_t *local)
+int yespower_free_local_b256(yespower_local_t *local)
 {
 	return free_region(local);
 }
