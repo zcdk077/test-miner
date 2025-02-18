@@ -95,6 +95,7 @@
 #include <string.h>
 
 #include "insecure_memzero-b256.h"
+#include "blake256.h"
 #include "sha256-b256.h"
 #include "sysendian-b256.h"
 
