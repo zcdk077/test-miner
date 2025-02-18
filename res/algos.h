@@ -82,6 +82,7 @@ enum algos {
 	ALGO_YESCRYPTR32, /* DMS (Document) */
 	ALGO_YESPOWER,    /* CRP, Veco */
 	ALGO_YESPOWERR16, /* YTN (Yenten) */
+        ALGO_YESPOWERR32, /* DME (Dogemone) */
 	ALGO_YESPOWERIC,  /* ISO (IsotopeC) */
 	ALGO_YESPOWERIOTS,/* Yespower based algo for IOTS */
 	ALGO_YESPOWERITC, /* ITC (Intercoin) */
@@ -179,6 +180,7 @@ static const char *algo_names[] = {
 	"yescryptR32",
 	"yespower",
 	"yespowerR16",
+        "yespowerR32",
 	"yespowerIC",
 	"yespowerIOTS",
 	"yespowerITC",
