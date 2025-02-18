@@ -71,10 +71,10 @@ typedef struct {
  */
 typedef struct {
 	unsigned char uc[32];
-} yespower_binary_t;
+} yespower_binary_t_b256;
 
 /**
- * yespower_init_local(local):
+ * yespower_init_local_b256(local):
  * Initialize the thread-local (RAM) data structure.  Actual memory allocation
  * is currently fully postponed until a call to yespower().
  *
@@ -82,10 +82,10 @@ typedef struct {
  *
  * MT-safe as long as local is local to the thread.
  */
-extern int yespower_init_local(yespower_local_t *local);
+extern int yespower_init_local_b256(yespower_local_t *local);
 
 /**
- * yespower_free_local(local):
+ * yespower_free_local_b256(local):
  * Free memory that may have been allocated for an initialized thread-local
  * (RAM) data structure.
  *
@@ -93,7 +93,7 @@ extern int yespower_init_local(yespower_local_t *local);
  *
  * MT-safe as long as local is local to the thread.
  */
-extern int yespower_free_local(yespower_local_t *local);
+extern int yespower_free_local_b256(yespower_local_t *local);
 
 /**
  * yespower(local, src, srclen, params, dst):
@@ -112,7 +112,7 @@ extern int yespower(yespower_local_t *local,
     const yespower_params_t *params, yespower_binary_t *dst);
 
 /**
- * yespower_tls(src, srclen, params, dst):
+ * yespower_tls_b256(src, srclen, params, dst):
  * Compute yespower(src[0 .. srclen - 1], N, r), to be checked for "< target".
  * The memory allocation is maintained internally using thread-local storage.
  *
@@ -120,7 +120,7 @@ extern int yespower(yespower_local_t *local,
  *
  * MT-safe as long as dst is local to the thread.
  */
-extern int yespower_tls(const uint8_t *src, size_t srclen,
+extern int yespower_tls_b256(const uint8_t *src, size_t srclen,
     const yespower_params_t *params, yespower_binary_t *dst);
 
 #ifdef __cplusplus
