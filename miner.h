@@ -289,6 +289,7 @@ int scanhash_yescryptr16(int thr_id, struct work *work, uint32_t max_nonce, uint
 int scanhash_yescryptr32(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespower(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerR16(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
+int scanhash_yespowerR32(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerRES(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerURX(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerLNC(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
