@@ -1117,7 +1117,7 @@ int yespower_b256(yespower_local_t *local,
 		HMAC_SHA256_Buf_B256(B + B_size - 64, 64,
 		    sha256, sizeof(sha256), (uint8_t *)dst);
 	} else if (version == YESPOWER_1_0_BLAKE256) {
-		blake256_hash(blake2b, src, srclen);
+		blake256_hash(blake256, src, srclen);
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256(Swidth);
 		ctx.w = 0;
 
