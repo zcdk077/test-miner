@@ -1,6 +1,7 @@
 #include "cpuminer-config.h"
 #include "miner.h"
 
+#include "sha3/sph_blake.h"
 #include "yespower-1.0.1-blake256/yespower-b256.h"
 
 #include <stdlib.h>
