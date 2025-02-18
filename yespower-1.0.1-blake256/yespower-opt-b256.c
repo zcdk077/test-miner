@@ -1019,7 +1019,7 @@ static void smix(uint8_t *B, size_t r, uint32_t N,
 #undef smix
 
 /**
- * yespower_b25(local, src, srclen, params, dst):
+ * yespower_b256(local, src, srclen, params, dst):
  * Compute yespower_b256(src[0 .. srclen - 1], N, r), to be checked for "< target".
  * local is the thread-local data structure, allowing to preserve and reuse a
  * memory allocation across calls, thereby reducing its overhead.
