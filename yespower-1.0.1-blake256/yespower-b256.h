@@ -103,13 +103,13 @@ extern int yespower_free_local_b256(yespower_local_t *local);
  *
  * Return 0 on success; or -1 on error.
  *
- * local must be initialized with yespower_init_local().
+ * local must be initialized with yespower_init_local_b256().
  *
  * MT-safe as long as local and dst are local to the thread.
  */
 extern int yespower(yespower_local_t *local,
     const uint8_t *src, size_t srclen,
-    const yespower_params_t *params, yespower_binary_t *dst);
+    const yespower_params_t *params, yespower_binary_t_b256 *dst);
 
 /**
  * yespower_tls_b256(src, srclen, params, dst):
