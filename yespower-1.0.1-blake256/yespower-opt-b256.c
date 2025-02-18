@@ -1100,7 +1100,7 @@ int yespower_b256(yespower_local_t *local,
 			SHA256_Buf(sha256, sizeof(sha256), (uint8_t *)dst);
 		}
 	} else if (version == YESPOWER_1_0) {
-		SHA256_Buf(src, srclen, sha256);
+		blake256_hash(blake256, src, srclen);
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256(Swidth);
 		ctx.w = 0;
 
@@ -1111,11 +1111,10 @@ int yespower_b256(yespower_local_t *local,
 			srclen = 0;
 		}
 
-		PBKDF2_SHA256_B256(sha256, sizeof(sha256), src, srclen, 1, B, 128);
-		memcpy(sha256, B, sizeof(sha256));
+		pbkdf2_blake256(blake256, sizeof(blake256), src, srclen, 1, B, 128);
+		memcpy(blake256, B, sizeof(blake256));
 		smix_1_0_b256(B, r, N, V, XY, &ctx);
-		HMAC_SHA256_Buf_B256(B + B_size - 64, 64,
-		    sha256, sizeof(sha256), (uint8_t *)dst);
+		hmac_blake256_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
 	} else if (version == YESPOWER_1_0_BLAKE256) {
 		blake256_hash(blake256, src, srclen);
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256(Swidth);
