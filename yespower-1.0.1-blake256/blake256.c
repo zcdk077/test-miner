@@ -125,30 +125,31 @@ void blake256_init(state *S) {
 
 // datalen = number of bits
 void blake256_update(state *S, const uint8_t *data, uint64_t datalen) {
-    int left = S->buflen >> 3;
+    int left = S->buflen;
     int fill = 64 - left;
 
-    if (left && (((datalen >> 3) & 0x3F) >= (unsigned) fill)) {
-        memcpy((void *) (S->buf + left), (void *) data, fill);
-        S->t[0] += 512;
-        if (S->t[0] == 0) S->t[1]++;
-        blake256_compress(S, S->buf);
-        data += fill;
-        datalen -= (fill << 3);
+    if( left && ( datalen >= fill ) )
+    {
+      memcpy( ( void * ) ( S->buf + left ), ( void * ) data, fill );
+      S->t[0] += 512;
+      if ( S->t[0] == 0 ) S->t[1]++;
+        blake256_compress( S, S->buf );
+        in += fill;
+        inlen  -= fill;
         left = 0;
     }
 
-    while (datalen >= 512) {
+    while (datalen >= 64) {
         S->t[0] += 512;
         if (S->t[0] == 0) S->t[1]++;
         blake256_compress(S, data);
         data += 64;
-        datalen -= 512;
+        datalen -= 64;
     }
 
     if (datalen > 0) {
-        memcpy((void *) (S->buf + left), (void *) data, datalen >> 3);
-        S->buflen = (left << 3) + (int)datalen;
+        memcpy((void *) (S->buf + left), (void *) data, datalen);
+        S->buflen = left + (int)datalen;
     } else {
         S->buflen = 0;
     }
