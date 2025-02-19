@@ -24,7 +24,7 @@ typedef struct {
 extern "C" {
 #endif
 
-int blake256_init(state *);
+void blake256_init(state *);
 void blake256_update(state *, const uint8_t *, uint64_t);
 void blake256_final(state *, uint8_t *);
 void blake256_hash(uint8_t *, const uint8_t *, uint64_t);
