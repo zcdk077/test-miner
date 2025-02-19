@@ -13,7 +13,7 @@
 void dogemone_hash( const char *input, char *output, uint32_t len )
 {
     static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 8, NULL, 0};
-    yespower_tls_b256( (yespower_binary_t_b256*)input, len, &v1, (yespower_binary_t_b256*)output );
+    yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &v1, (yespower_binary_t_b256dme*)output );
     static yespower_params_t params = {
         .version = YESPOWER_1_0_BLAKE256,
         .N = 2048,
@@ -21,7 +21,7 @@ void dogemone_hash( const char *input, char *output, uint32_t len )
         .pers = nullptr,
         .perslen = 0
     };
-    yespower_tls_b256( (yespower_binary_t_b256*)input, len, &params, (yespower_binary_t_b256*)output );
+    yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &params, (yespower_binary_t_b256dme*)output );
 }
 
 int scanhash_dogemone( int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done )
