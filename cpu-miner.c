@@ -2503,7 +2503,7 @@ static void *miner_thread(void *userdata)
 		case ALGO_YESPOWERR16:
 			rc = scanhash_yespowerR16(thr_id, &work, max_nonce, &hashes_done);
 			break;
-		case ALGO_YESPOWERR32:
+		case ALGO_DOGEMONE:
 			rc = scanhash_dogemone(thr_id, &work, max_nonce, &hashes_done);
 			break;
 		case ALGO_YESPOWERLITB:
