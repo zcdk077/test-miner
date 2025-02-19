@@ -11,7 +11,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "sha3/sph_types.h"
+
+#include "sph_types.h"
 #include "sysendian-b256.h"
 #include "blake256.h"
 
@@ -99,7 +100,7 @@ void blake256_compress(state *S, const uint8_t *block) {
     for (i = 0; i < 8;  ++i) S->h[i] ^= S->s[i % 4];
 }
 
-int blake256_init(state *S) {
+void blake256_init(state *S) {
     S->h[0] = 0x6A09E667;
     S->h[1] = 0xBB67AE85;
     S->h[2] = 0x3C6EF372;
