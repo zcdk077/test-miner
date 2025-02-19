@@ -155,38 +155,40 @@ void blake256_update(state *S, const uint8_t *data, uint64_t datalen) {
     }
 }
 
-// datalen = r of bits
-void blake2241_update(state *S, const uint8_t *data, uint64_t datalen) {
-    blake256_update(S, data, datalen);
-}
-
-void blake2561_final_h(state *S, uint8_t *digest, uint8_t pa, uint8_t pb) {
-    uint8_t msglen[8];
+void blake256_final(state *S, uint8_t *digest) {
+    uint8_t msglen[8], zo = 0x01, oo = 0x81;
     uint32_t lo = S->t[0] + S->buflen, hi = S->t[1];
-    if (lo < (unsigned) S->buflen) hi++;
+
+    if ( lo < ( S->buflen << 3 ) ) hi++;
     U32TO8(msglen + 0, hi);
     U32TO8(msglen + 4, lo);
 
-    if (S->buflen == 440) { /* one padding byte */
-        S->t[0] -= 8;
-        blake256_update(S, &pa, 8);
-    } else {
-        if (S->buflen < 440) { /* enough space to fill the block  */
-            if (S->buflen == 0) S->nullt = 1;
-            S->t[0] -= 440 - S->buflen;
-            blake256_update(S, padding, 440 - S->buflen);
-        } else { /* need 2 compressions */
-            S->t[0] -= 512 - S->buflen;
-            blake256_update(S, padding, 512 - S->buflen);
+    if ( S->buflen == 55 )   /* one padding byte */
+    {
+      S->t[0] -= 8;
+      blake256_update( S, &oo, 1 );
+    }
+    else
+    {
+        if ( S->buflen < 55 )   /* enough space to fill the block  */
+        {
+          if ( !S->buflen ) S->nullt = 1;
+          S->t[0] -= 440 - ( S->buflen << 3 );
+          blake256_update( S, padding, 55 - S->buflen );
+        }
+        else   /* need 2 compressions */
+        {
+            S->t[0] -= 512 - ( S->buflen << 3 );
+            blake256_update( S, padding, 64 - S->buflen );
             S->t[0] -= 440;
-            blake256_update(S, padding + 1, 440);
+            blake256_update( S, padding + 1, 55 );
             S->nullt = 1;
         }
-        blake256_update(S, &pb, 8);
+        blake256_update( S, &zo, 1 );
         S->t[0] -= 8;
     }
     S->t[0] -= 64;
-    blake256_update(S, msglen, 64);
+    blake256_update(S, msglen, 8);
 
     U32TO8(digest +  0, S->h[0]);
     U32TO8(digest +  4, S->h[1]);
@@ -198,28 +200,12 @@ void blake2561_final_h(state *S, uint8_t *digest, uint8_t pa, uint8_t pb) {
     U32TO8(digest + 28, S->h[7]);
 }
 
-void blake2561_final(state *S, uint8_t *digest) {
-    blake256_final_h(S, digest, 0x81, 0x01);
-}
-
-void blake2241_final(state *S, uint8_t *digest) {
-    blake256_final_h(S, digest, 0x80, 0x00);
-}
-
 // inlen = number of bytes
-void blake2561_hash(uint8_t *out, const uint8_t *in, uint64_t inlen) {
+void blake256_hash(uint8_t *out, const uint8_t *in, uint64_t inlen) {
     state S;
     blake256_init(&S);
-    blake256_update(&S, in, inlen * 8);
+    blake256_update(&S, in, inlen);
     blake256_final(&S, out);
-}
-
-// inlen = number of bytes
-void blake2241_hash(uint8_t *out, const uint8_t *in, uint64_t inlen) {
-    state S;
-    blake224_init(&S);
-    blake224_update(&S, in, inlen * 8);
-    blake224_final(&S, out);
 }
 
 // keylen = number of bytes
