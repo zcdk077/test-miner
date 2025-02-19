@@ -124,13 +124,13 @@ void blake256_init(state *S) {
 }
 
 // datalen = number of bits
-void blake256_update(state *S, const uint8_t *data, uint64_t datalen) {
+void blake256_update(state *S, const uint8_t *in, uint64_t inlen) {
     int left = S->buflen;
     int fill = 64 - left;
 
-    if( left && ( datalen >= fill ) )
+    if( left && ( inlen >= fill ) )
     {
-      memcpy( ( void * ) ( S->buf + left ), ( void * ) data, fill );
+      memcpy( ( void * ) ( S->buf + left ), ( void * ) in, fill );
       S->t[0] += 512;
       if ( S->t[0] == 0 ) S->t[1]++;
         blake256_compress( S, S->buf );
@@ -139,23 +139,23 @@ void blake256_update(state *S, const uint8_t *data, uint64_t datalen) {
         left = 0;
     }
 
-    while (datalen >= 64) {
+    while (inlen >= 64) {
         S->t[0] += 512;
         if (S->t[0] == 0) S->t[1]++;
-        blake256_compress(S, data);
-        data += 64;
-        datalen -= 64;
+        blake256_compress(S, in);
+        in += 64;
+        inlen -= 64;
     }
 
-    if (datalen > 0) {
-        memcpy((void *) (S->buf + left), (void *) data, datalen);
-        S->buflen = left + (int)datalen;
+    if (inlen > 0) {
+        memcpy((void *) (S->buf + left), (void *) in, inlen);
+        S->buflen = left + (int)inlen;
     } else {
         S->buflen = 0;
     }
 }
 
-void blake256_final(state *S, uint8_t *digest) {
+void blake256_final(state *S, uint8_t *out) {
     uint8_t msglen[8], zo = 0x01, oo = 0x81;
     uint32_t lo = S->t[0] + S->buflen, hi = S->t[1];
 
@@ -190,14 +190,14 @@ void blake256_final(state *S, uint8_t *digest) {
     S->t[0] -= 64;
     blake256_update(S, msglen, 8);
 
-    U32TO8(digest +  0, S->h[0]);
-    U32TO8(digest +  4, S->h[1]);
-    U32TO8(digest +  8, S->h[2]);
-    U32TO8(digest + 12, S->h[3]);
-    U32TO8(digest + 16, S->h[4]);
-    U32TO8(digest + 20, S->h[5]);
-    U32TO8(digest + 24, S->h[6]);
-    U32TO8(digest + 28, S->h[7]);
+    U32TO8(out +  0, S->h[0]);
+    U32TO8(out +  4, S->h[1]);
+    U32TO8(out +  8, S->h[2]);
+    U32TO8(out + 12, S->h[3]);
+    U32TO8(out + 16, S->h[4]);
+    U32TO8(out + 20, S->h[5]);
+    U32TO8(out + 24, S->h[6]);
+    U32TO8(out + 28, S->h[7]);
 }
 
 // inlen = number of bytes
@@ -238,61 +238,17 @@ void hmac_blake256_init(hmac_state *S, const uint8_t *_key, uint64_t keylen) {
     memset(keyhash, 0, 32);
 }
 
-// keylen = number of bytes
-void hmac_blake224_init(hmac_state *S, const uint8_t *_key, uint64_t keylen) {
-    const uint8_t *key = _key;
-    uint8_t keyhash[32];
-    uint8_t pad[64];
-    uint64_t i;
-
-    if (keylen > 64) {
-        blake256_hash(keyhash, key, keylen);
-        key = keyhash;
-        keylen = 28;
-    }
-
-    blake224_init(&S->inner);
-    memset(pad, 0x36, 64);
-    for (i = 0; i < keylen; ++i) {
-        pad[i] ^= key[i];
-    }
-    blake224_update(&S->inner, pad, 512);
-
-    blake224_init(&S->outer);
-    memset(pad, 0x5c, 64);
-    for (i = 0; i < keylen; ++i) {
-        pad[i] ^= key[i];
-    }
-    blake224_update(&S->outer, pad, 512);
-
-    memset(keyhash, 0, 32);
-}
-
 // datalen = number of bits
-void hmac_blake256_update(hmac_state *S, const uint8_t *data, uint64_t datalen) {
+void hmac_blake256_update(hmac_state *S, const uint8_t *in, uint64_t inlen) {
   // update the inner state
-  blake256_update(&S->inner, data, datalen);
+  blake256_update(&S->inner, in, inlen);
 }
 
-// datalen = number of bits
-void hmac_blake224_update(hmac_state *S, const uint8_t *data, uint64_t datalen) {
-  // update the inner state
-  blake224_update(&S->inner, data, datalen);
-}
-
-void hmac_blake256_final(hmac_state *S, uint8_t *digest) {
+void hmac_blake256_final(hmac_state *S, uint8_t *out) {
     uint8_t ihash[32];
     blake256_final(&S->inner, ihash);
     blake256_update(&S->outer, ihash, 256);
-    blake256_final(&S->outer, digest);
-    memset(ihash, 0, 32);
-}
-
-void hmac_blake224_final(hmac_state *S, uint8_t *digest) {
-    uint8_t ihash[32];
-    blake224_final(&S->inner, ihash);
-    blake224_update(&S->outer, ihash, 224);
-    blake224_final(&S->outer, digest);
+    blake256_final(&S->outer, out);
     memset(ihash, 0, 32);
 }
 
@@ -300,16 +256,8 @@ void hmac_blake224_final(hmac_state *S, uint8_t *digest) {
 void hmac_blake256_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const uint8_t *in, uint64_t inlen) {
     hmac_state S;
     hmac_blake256_init(&S, key, keylen);
-    hmac_blake256_update(&S, in, inlen * 8);
+    hmac_blake256_update(&S, in, inlen);
     hmac_blake256_final(&S, out);
-}
-
-// keylen = number of bytes; inlen = number of bytes
-void hmac_blake224_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const uint8_t *in, uint64_t inlen) {
-    hmac_state S;
-    hmac_blake224_init(&S, key, keylen);
-    hmac_blake224_update(&S, in, inlen * 8);
-    hmac_blake224_final(&S, out);
 }
 
 void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
