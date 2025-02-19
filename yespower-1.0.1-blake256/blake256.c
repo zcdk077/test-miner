@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "sph_types.h"
+#include "sha3/sph_types.h"
 #include "sysendian-b256.h"
 #include "blake256.h"
 
