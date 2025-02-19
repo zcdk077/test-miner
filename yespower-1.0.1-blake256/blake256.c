@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "sha3/sph_types.h"
-#include "sysendian.h"
+#include "sysendian-b256.h"
 #include "blake256.h"
 
 #define U8TO32(p) \
