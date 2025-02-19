@@ -40,7 +40,7 @@ int scanhash_dogemone( int thr_id, struct work *work, uint32_t max_nonce, uint64
 
         do {
                 be32enc(&endiandata[19], n);
-                yespowerR32_hash((char*) endiandata, (char*) vhash, 80);
+                dogemone_hash((char*) endiandata, (char*) vhash, 80);
                 if (vhash[7] < Htarg && fulltest(vhash, ptarget)) {
                         work_set_target_ratio( work, vhash );
                         *hashes_done = n - first_nonce + 1;
