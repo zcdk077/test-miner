@@ -24,10 +24,10 @@ typedef struct {
 extern "C" {
 #endif
 
-void blake256_init(state *);
-void blake256_update(state *, const uint8_t *in, uint64_t inlen);
-void blake256_final(state *, uint8_t *out);
-void blake256_hash(uint8_t *, const uint8_t *in, uint64_t inlen);
+void blake256_init(state *S);
+void blake256_update(state *S, const uint8_t *in, uint64_t inlen);
+void blake256_final(state *S, uint8_t *out);
+void blake256_hash(uint8_t *out, const uint8_t *in, uint64_t inlen);
 
 /* HMAC functions: */
 
