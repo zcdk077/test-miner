@@ -116,7 +116,7 @@ void blake256_init(blake256_ctx *ctx)
     ctx->s[0] = ctx->s[1] = ctx->s[2] = ctx->s[3] = 0;
 }
 
-void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t *datalen)
+void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen)
 {
     int left = ctx->buflen >> 3;
     int fill = 64 - left;
