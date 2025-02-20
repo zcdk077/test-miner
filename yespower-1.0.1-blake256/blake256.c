@@ -55,7 +55,7 @@ const uint8_t padding [] =
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-void blake256_compress(blake256_ctx *ctx, const uint8_t *block
+void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
 {
     uint32_t v[16], m[16], i;
 #define ROT(x,n) (((x)<<(32-n))|((x)>>(n)))
