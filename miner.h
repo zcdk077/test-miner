@@ -221,7 +221,6 @@ int scanhash_c11(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *ha
 int scanhash_curvehash(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_decred(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_dedal(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
-int scanhash_dogemone(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_drop(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_fresh(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_geek(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
@@ -290,6 +289,7 @@ int scanhash_yescryptr16(int thr_id, struct work *work, uint32_t max_nonce, uint
 int scanhash_yescryptr32(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespower(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerR16(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
+int scanhash_yespowerR32(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerRES(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerURX(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
 int scanhash_yespowerLNC(int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done);
@@ -551,7 +551,6 @@ void bmwhash(void *output, const void *input);
 void bmw512_hash(void *output, const void *input);
 void c11hash(void *output, const void *input);
 void decred_hash(void *output, const void *input);
-void dogemone_hash(const char *input, char *output, uint32_t len);
 void droplp_hash(void *output, const void *input);
 void groestlhash(void *output, const void *input);
 void heavyhash(unsigned char* output, const unsigned char* input, int len);
