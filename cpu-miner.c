@@ -199,7 +199,6 @@ Options:\n\
                           decred         Blake-256 14-rounds 180 bytes\n\
                           dedal          GLT[Global Token]\n\
                           dmd-gr         Diamond-Groestl\n\
-                          dogemone       DME (Dogemone)\n\
                           drop           Dropcoin\n\
                           fresh          Fresh\n\
                           geek           GeekCash\n\
@@ -271,6 +270,7 @@ Options:\n\
                           yespowerLNC    LTNCG (LightningCashGold)\n\
                           yespowerMGPC   MGPC (Magpiecoin)\n\
                           yespowerR16    YTN (Yenten)\n\
+                          yespowerR32    DME (Dogemone)\n\
                           yespowerSUGAR  SUGAR (Sugarchain)\n\
                           yespowerTIDE   TDC (Tidecoin)\n\
                           yespowerURX    URX (UraniumX)\n\
@@ -1784,7 +1784,6 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 
 		switch (opt_algo) {
 			case ALGO_CPUPOWER:
-			case ALGO_DOGEMONE:
 			case ALGO_DROP:
 			case ALGO_GR:
 			case ALGO_JHA:
@@ -1801,6 +1800,7 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 			case ALGO_YESCRYPTR32:
 			case ALGO_YESPOWER:
 			case ALGO_YESPOWERR16:
+			case ALGO_YESPOWERR32:
 			case ALGO_YESPOWERIC:
 			case ALGO_YESPOWERIOTS:
 			case ALGO_YESPOWERITC:
@@ -2143,8 +2143,7 @@ static void *miner_thread(void *userdata)
 			case ALGO_AXIOM:
 			case ALGO_SCRYPTJANE:
 				max64 = 0x40LL;
-				break;
-			case ALGO_DOGEMONE:
+				break; 
 			case ALGO_DROP:
 			case ALGO_GR:
 			case ALGO_MIKE:
@@ -2165,6 +2164,7 @@ static void *miner_thread(void *userdata)
 			case ALGO_POWER2B:
 			case ALGO_YESPOWER:
 			case ALGO_YESPOWERR16:
+			case ALGO_YESPOWERR32
 			case ALGO_YESPOWERIC:
 			case ALGO_YESPOWERIOTS:
 			case ALGO_YESPOWERITC:
@@ -2301,9 +2301,6 @@ static void *miner_thread(void *userdata)
 			break;
 		case ALGO_DEDAL:
 			rc = scanhash_dedal(thr_id, &work, max_nonce, &hashes_done);
-			break;
-		case ALGO_DOGEMONE:
-			rc = scanhash_dogemone(thr_id, &work, max_nonce, &hashes_done);
 			break;
 		case ALGO_DROP:
 			rc = scanhash_drop(thr_id, &work, max_nonce, &hashes_done);
@@ -2505,6 +2502,9 @@ static void *miner_thread(void *userdata)
 			break;
 		case ALGO_YESPOWERR16:
 			rc = scanhash_yespowerR16(thr_id, &work, max_nonce, &hashes_done);
+			break;
+		case ALGO_YESPOWERR32:
+			rc = scanhash_yespowerR32(thr_id, &work, max_nonce, &hashes_done);
 			break;
 		case ALGO_YESPOWERLITB:
 			rc = scanhash_yespowerLITB(thr_id, &work, max_nonce, &hashes_done);
@@ -3102,6 +3102,9 @@ void parse_arg(int key, char *arg)
 			else if (!strcasecmp("xelisv2-pepew", arg))
 				i = opt_algo = ALGO_XELISV2,
 				algo_names[opt_algo] = "xelisv2-pepew";
+			else if (!strcasecmp("dogemone", arg))
+				i = opt_algo = ALGO_YESPOWERR32,
+				algo_names[opt_algo] = "yespowerR32";
 			else
 				applog(LOG_ERR, "Unknown algo parameter '%s'", arg);
 		}
