@@ -2164,7 +2164,7 @@ static void *miner_thread(void *userdata)
 			case ALGO_POWER2B:
 			case ALGO_YESPOWER:
 			case ALGO_YESPOWERR16:
-			case ALGO_YESPOWERR32
+			case ALGO_YESPOWERR32:
 			case ALGO_YESPOWERIC:
 			case ALGO_YESPOWERIOTS:
 			case ALGO_YESPOWERITC:
