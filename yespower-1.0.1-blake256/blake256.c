@@ -16,7 +16,7 @@
 #include "sysendian-b256.h"
 #include "blake256.h"
 
-#define U32TO32(p) \
+#define U8TO32(p) \
     (((uint32_t)((p)[0]) << 24) | ((uint32_t)((p)[1]) << 16) |  \
     ((uint32_t)((p)[2]) <<  8) | ((uint32_t)((p)[3])))
 #define U32TO8(p, v) \
@@ -55,7 +55,7 @@ static const uint8_t padding [] =
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
+static void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
 {
     uint32_t v[16], m[16], i;
 #define ROT(x,n) (((x)<<(32-n))|((x)>>(n)))
