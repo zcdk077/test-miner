@@ -55,7 +55,7 @@ static const uint8_t padding [] =
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-static void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
+void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
 {
     uint32_t v[16], m[16], i;
 #define ROT(x,n) (((x)<<(32-n))|((x)>>(n)))
@@ -70,7 +70,7 @@ static void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
     v[b] = ROT(v[b] ^ v[c], 7);
 
     for(i=0; i<16;++i)  m[i] = U8TO32(block + i*4);
-    for(i=0; i< 8;++i)  v[i] = S->h[i];
+    for(i=0; i< 8;++i)  v[i] = ctx->h[i];
     v[ 8] = ctx->s[0] ^ 0x243F6A88;
     v[ 9] = ctx->s[1] ^ 0x85A308D3;
     v[10] = ctx->s[2] ^ 0x13198A2E;
@@ -172,7 +172,7 @@ void blake256_final(blake256_ctx *ctx, uint8_t *digest)
         {
             if (!ctx->buflen) ctx->nullt = 1;
             ctx->t[0] -= 440 - ctx->buflen;
-            blake256_update(ctx, padding, 440 - S->buflen);
+            blake256_update(ctx, padding, 440 - ctx->buflen);
         }
         else
         {
