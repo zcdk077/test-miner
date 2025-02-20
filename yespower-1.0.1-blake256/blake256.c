@@ -24,7 +24,7 @@
     (p)[0] = (uint8_t)((v) >> 24); (p)[1] = (uint8_t)((v) >> 16); \
     (p)[2] = (uint8_t)((v) >>  8); (p)[3] = (uint8_t)((v)      );
 
-const uint8_t sigma[][16] =
+static const uint8_t sigma[][16] =
 {
     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 },
     {14,10, 4, 8, 9,15,13, 6, 1,12, 0, 2,11, 7, 5, 3 },
@@ -42,7 +42,7 @@ const uint8_t sigma[][16] =
     { 7, 9, 3, 1,13,12,11,14, 2, 6, 5,10, 4, 0,15, 8 }
 };
 
-const uint32_t cst[16] =
+static const uint32_t cst[16] =
 {
     0x243F6A88,0x85A308D3,0x13198A2E,0x03707344,
     0xA4093822,0x299F31D0,0x082EFA98,0xEC4E6C89,
@@ -50,13 +50,13 @@ const uint32_t cst[16] =
     0xC0AC29B7,0xC97C50DD,0x3F84D5B5,0xB5470917
 };
 
-const uint8_t padding [] =
+static const uint8_t padding [] =
 {
     0x80,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
+static void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
 {
     uint32_t v[16], m[16], i;
 #define ROT(x,n) (((x)<<(32-n))|((x)>>(n)))
@@ -103,7 +103,7 @@ void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
     for(i=0; i<8 ;++i)  ctx->h[i] ^= ctx->s[i%4];
 }
 
-void blake256_init(blake256_ctx *ctx)
+void blake2561_init(blake256_ctx *ctx)
 {
     ctx->h[0] = 0x6A09E667;
     ctx->h[1] = 0xBB67AE85;
@@ -117,7 +117,7 @@ void blake256_init(blake256_ctx *ctx)
     ctx->s[0] = ctx->s[1] = ctx->s[2] = ctx->s[3] = 0;
 }
 
-void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen)
+void blake2561_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen)
 {
     int left = ctx->buflen >> 3;
     int fill = 64 - left;
@@ -153,7 +153,7 @@ void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen)
     }
 }
 
-void blake256_final(blake256_ctx *ctx, uint8_t *digest)
+void blake2561_final(blake256_ctx *ctx, uint8_t *digest)
 {
     uint8_t msglen[8], zo = 0x01, oo = 0x81;
     uint32_t lo = ctx->t[0] + ctx->buflen, hi = ctx->t[1];
@@ -200,7 +200,7 @@ void blake256_final(blake256_ctx *ctx, uint8_t *digest)
 }
 
 // inlen = number of bytes
-void blake256_hash(uint8_t *out, const uint8_t *in, uint64_t inlen)
+void blake2561_hash(uint8_t *out, const uint8_t *in, uint64_t inlen)
 {
     blake256_ctx ctx;
     blake256_init(&ctx);
