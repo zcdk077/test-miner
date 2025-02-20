@@ -8,8 +8,6 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define nullptr ((void*)0)
-
 void dogemone_hash( const char *input, char *output, uint32_t len )
 {
     static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 8, NULL, 0};
@@ -18,7 +16,7 @@ void dogemone_hash( const char *input, char *output, uint32_t len )
         .version = YESPOWER_1_0_BLAKE256,
         .N = 2048,
         .r = 32,
-        .pers = nullptr,
+        .pers = NULL,
         .perslen = 0
     };
     yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &params, (yespower_binary_t_b256dme*)output );
