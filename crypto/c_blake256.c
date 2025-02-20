@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <sha3/sph_types.h>
 #include "c_blake256.h"
@@ -116,7 +117,7 @@ void blake256_init(blake256_ctx *ctx)
 }
 
 // datalen = number of bits
-void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t *datalen)
+void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen)
 {
     int left = ctx->buflen >> 3;
     int fill = 64 - left;
