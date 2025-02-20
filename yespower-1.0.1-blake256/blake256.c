@@ -121,7 +121,7 @@ void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t *datalen)
     int left = ctx->buflen >> 3;
     int fill = 64 - left;
 
-    if (left && ( ((datalen >> 3) & 0x3F) >= (unsigned)fill ))
+    if (left && ( ((datalen >> 3) & 0x3F) >= (unsigned) fill))
     {
         memcpy((void *) (ctx->buf + left), (void *) data, fill);
         ctx->t[0] += 512;
