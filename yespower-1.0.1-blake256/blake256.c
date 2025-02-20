@@ -8,9 +8,9 @@
  * HMAC is specified by RFC 2104.
  */
 
-#include <string.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "sph_types.h"
 #include "sysendian-b256.h"
