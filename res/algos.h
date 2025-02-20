@@ -20,7 +20,6 @@ enum algos {
 	ALGO_DECRED,      /* Decred */
 	ALGO_DEDAL,       /* GlobalToken */
 	ALGO_DMD_GR,      /* Diamond */
-        ALGO_DOGEMONE,    /* DME (Dogemone) */
 	ALGO_DROP,        /* Dropcoin */
 	ALGO_FRESH,       /* Fresh */
 	ALGO_GEEK,
@@ -83,6 +82,7 @@ enum algos {
 	ALGO_YESCRYPTR32, /* DMS (Document) */
 	ALGO_YESPOWER,    /* CRP, Veco */
 	ALGO_YESPOWERR16, /* YTN (Yenten) */
+        ALGO_YESPOWERR32,    /* DME (Dogemone) */
 	ALGO_YESPOWERIC,  /* ISO (IsotopeC) */
 	ALGO_YESPOWERIOTS,/* Yespower based algo for IOTS */
 	ALGO_YESPOWERITC, /* ITC (Intercoin) */
@@ -118,7 +118,6 @@ static const char *algo_names[] = {
 	"decred",
 	"dedal",
 	"dmd-gr",
-        "dogemone",
 	"drop",
 	"fresh",
 	"geek",
@@ -181,6 +180,7 @@ static const char *algo_names[] = {
 	"yescryptR32",
 	"yespower",
 	"yespowerR16",
+        "yespowerR32",
 	"yespowerIC",
 	"yespowerIOTS",
 	"yespowerITC",
