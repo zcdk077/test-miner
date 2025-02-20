@@ -24,17 +24,17 @@ typedef struct {
 extern "C" {
 #endif
 
-void blake256_init(blake256_ctx *ctx);
-void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen);
-void blake256_final(blake256_ctx *ctx, uint8_t *digest);
-void blake256_hash(uint8_t *out, const uint8_t *in, uint64_t inlen);
+void blake2561_init(blake256_ctx *ctx);
+void blake2561_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen);
+void blake2561_final(blake256_ctx *ctx, uint8_t *digest);
+void blake2561_hash(uint8_t *out, const uint8_t *in, uint64_t inlen);
 
 /* HMAC functions: */
 
-void hmac_blake256_init(hmac_ctx *ctx, const uint8_t *_key, uint64_t keylen);
-void hmac_blake256_update(hmac_ctx *ctx, const uint8_t *data, uint64_t datalen);
-void hmac_blake256_final(hmac_ctx *ctx, uint8_t *digest);
-void hmac_blake256_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const uint8_t *in, uint64_t inlen);
+void hmac_blake2561_init(hmac_ctx *ctx, const uint8_t *_key, uint64_t keylen);
+void hmac_blake2561_update(hmac_ctx *ctx, const uint8_t *data, uint64_t datalen);
+void hmac_blake2561_final(hmac_ctx *ctx, uint8_t *digest);
+void hmac_blake2561_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const uint8_t *in, uint64_t inlen);
 
 void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
   size_t saltlen, uint64_t c, uint8_t * buf, size_t dkLen);
