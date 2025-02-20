@@ -8,9 +8,13 @@
  * HMAC is specified by RFC 2104.
  */
 
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdint.h>
+
+#include "sha3/sph_types.h"
+#include "sysendian.h"
 #include "c_blake256.h"
 
 #define U8TO32(p) \
