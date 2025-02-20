@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 void blake256_init(blake256_ctx *ctx);
-void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t datalen);
+void blake256_update(blake256_ctx *ctx, const uint8_t *data, uint64_t *datalen);
 void blake256_final(blake256_ctx *ctx, uint8_t *digest);
 
 #if defined(__cplusplus)
