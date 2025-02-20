@@ -1060,7 +1060,11 @@ int yespower(yespower_local_t *local,
 		XY_size = B_size * 2;
 		Swidth = Swidth_0_5;
 		ctx.Sbytes = 2 * Swidth_to_Sbytes1(Swidth);
-	} else {
+	} else if (version == YESPOWER_1_0) {
+		XY_size = B_size + 64;
+		Swidth = Swidth_1_0;
+		ctx.Sbytes = 3 * Swidth_to_Sbytes1(Swidth);
+	} else if (version == YESPOWER_1_0_R32) {
 		XY_size = B_size + 64;
 		Swidth = Swidth_1_0;
 		ctx.Sbytes = 3 * Swidth_to_Sbytes1(Swidth);
