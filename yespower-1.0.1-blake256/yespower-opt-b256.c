@@ -1131,7 +1131,7 @@ int yespower_b256dme(yespower_local_t *local,
 		pbkdf2_blake256(blake256, sizeof(blake256), src, srclen, 1, B, 128);
 		memcpy(blake256, B, sizeof(blake256));
 		smix_1_0_b256dme(B, r, N, V, XY, &ctx);
-		hmac_blake256_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
+		hmac_blake2561_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
 	}
 
 	/* Success! */
