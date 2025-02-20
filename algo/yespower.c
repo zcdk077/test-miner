@@ -33,6 +33,8 @@
 #include "miner.h"
 
 #include "yespower-1.0.1/yespower.h"
+#include "sha3/sph_blake.h"
+#include "sha3/sph_types.h"
 
 #include <stdlib.h>
 #include <string.h>
