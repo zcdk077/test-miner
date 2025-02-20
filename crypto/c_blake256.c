@@ -13,7 +13,7 @@
 #include <string.h>
 
 #include <sha3/sph_types.h>
-#include "blake256.h"
+#include "c_blake256.h"
 
 #define U8TO32(p) \
     (((uint32_t)((p)[0]) << 24) | ((uint32_t)((p)[1]) << 16) |  \
