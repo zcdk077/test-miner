@@ -58,6 +58,7 @@ cpuminer_SOURCES = \
   crypto/chacha20_avx2.c \
   crypto/cpu-features.c \
   crypto/oaes_lib.c \
+  crypto/c_blake256.c \
   crypto/c_keccak.c \
   crypto/c_groestl.c \
   crypto/c_jh.c \
