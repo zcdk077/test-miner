@@ -165,7 +165,7 @@ void blake2561_final(blake256_ctx *ctx, uint8_t *digest)
     if (ctx->buflen == 440)
     {
         ctx->t[0] -= 8;
-        blake256_update(ctx, &oo, 8);
+        blake2561_update(ctx, &oo, 8);
     }
     else
     {
@@ -173,21 +173,21 @@ void blake2561_final(blake256_ctx *ctx, uint8_t *digest)
         {
             if (!ctx->buflen) ctx->nullt = 1;
             ctx->t[0] -= 440 - ctx->buflen;
-            blake256_update(ctx, padding, 440 - ctx->buflen);
+            blake2561_update(ctx, padding, 440 - ctx->buflen);
         }
         else
         {
             ctx->t[0] -= 512 - ctx->buflen;
-            blake256_update(ctx, padding, 512 - ctx->buflen);
+            blake2561_update(ctx, padding, 512 - ctx->buflen);
             ctx->t[0] -= 440;
-            blake256_update(ctx, padding+1, 440);
+            blake2561_update(ctx, padding+1, 440);
             ctx->nullt = 1;
         }
-        blake256_update(ctx, &zo, 8);
+        blake2561_update(ctx, &zo, 8);
         ctx->t[0] -= 8;
     }
     ctx->t[0] -= 64;
-    blake256_update(ctx, msglen, 64);
+    blake2561_update(ctx, msglen, 64);
 
     U32TO8(digest +  0, ctx->h[0]);
     U32TO8(digest +  4, ctx->h[1]);
@@ -203,9 +203,9 @@ void blake2561_final(blake256_ctx *ctx, uint8_t *digest)
 void blake2561_hash(uint8_t *out, const uint8_t *in, uint64_t inlen)
 {
     blake256_ctx ctx;
-    blake256_init(&ctx);
-    blake256_update(&ctx, in, inlen * 8);
-    blake256_final(&ctx, out);
+    blake2561_init(&ctx);
+    blake2561_update(&ctx, in, inlen * 8);
+    blake2561_final(&ctx, out);
 }
 
 // keylen = number of bytes
@@ -217,24 +217,24 @@ void hmac_blake2561_init(hmac_ctx *ctx, const uint8_t *_key, uint64_t keylen)
     uint64_t i;
 
     if (keylen > 64) {
-        blake256_hash(keyhash, key, keylen);
+        blake2561_hash(keyhash, key, keylen);
         key = keyhash;
         keylen = 32;
     }
 
-    blake256_init(&ctx->inner);
+    blake2561_init(&ctx->inner);
     memset(pad, 0x36, 64);
     for (i = 0; i < keylen; ++i) {
         pad[i] ^= key[i];
     }
-    blake256_update(&ctx->inner, pad, 512);
+    blake2561_update(&ctx->inner, pad, 512);
 
-    blake256_init(&ctx->outer);
+    blake2561_init(&ctx->outer);
     memset(pad, 0x5c, 64);
     for (i = 0; i < keylen; ++i) {
         pad[i] ^= key[i];
     }
-    blake256_update(&ctx->outer, pad, 512);
+    blake2561_update(&ctx->outer, pad, 512);
 
     memset(keyhash, 0, 32);
 }
@@ -243,15 +243,15 @@ void hmac_blake2561_init(hmac_ctx *ctx, const uint8_t *_key, uint64_t keylen)
 void hmac_blake2561_update(hmac_ctx *ctx, const uint8_t *data, uint64_t datalen)
 {
     // update the inner state
-    blake256_update(&ctx->inner, data, datalen);
+    blake2561_update(&ctx->inner, data, datalen);
 }
 
 void hmac_blake2561_final(hmac_ctx *ctx, uint8_t *digest)
 {
     uint8_t ihash[32];
-    blake256_final(&ctx->inner, ihash);
-    blake256_update(&ctx->outer, ihash, 256);
-    blake256_final(&ctx->outer, digest);
+    blake2561_final(&ctx->inner, ihash);
+    blake2561_update(&ctx->outer, ihash, 256);
+    blake2561_final(&ctx->outer, digest);
     memset(ihash, 0, 32);
 }
 
@@ -259,9 +259,9 @@ void hmac_blake2561_final(hmac_ctx *ctx, uint8_t *digest)
 void hmac_blake2561_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const uint8_t *in, uint64_t inlen)
 {
     hmac_ctx ctx;
-    hmac_blake256_init(&ctx, key, keylen);
-    hmac_blake256_update(&ctx, in, inlen * 8);
-    hmac_blake256_final(&ctx, out);
+    hmac_blake2561_init(&ctx, key, keylen);
+    hmac_blake2561_update(&ctx, in, inlen * 8);
+    hmac_blake2561_final(&ctx, out);
 }
 
 void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
@@ -277,8 +277,8 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
     size_t clen;
 
     /* Compute HMAC state after processing P and S. */
-    hmac_blake256_init(&PShctx, passwd, passwdlen);
-    hmac_blake256_update(&PShctx, salt, saltlen);
+    hmac_blake2561_init(&PShctx, passwd, passwdlen);
+    hmac_blake2561_update(&PShctx, salt, saltlen);
 
     /* Iterate through the blocks. */
     for (i = 0; i * 32 < dkLen; i++)
@@ -288,8 +288,8 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
 
         /* Compute U_1 = PRF(P, S || INT(i)). */
         memcpy(&hctx, &PShctx, sizeof(hmac_ctx));
-        hmac_blake256_update(&hctx, ivec, 4);
-        hmac_blake256_final(&hctx, U);
+        hmac_blake2561_update(&hctx, ivec, 4);
+        hmac_blake2561_final(&hctx, U);
 
         /* T_i = U_1 ... */
         memcpy(T, U, 32);
@@ -297,9 +297,9 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
         for (j = 2; j <= c; j++)
         {
             /* Compute U_j. */
-            hmac_blake256_init(&hctx, passwd, passwdlen);
-            hmac_blake256_update(&hctx, U, 32);
-            hmac_blake256_final(&hctx, U);
+            hmac_blake2561_init(&hctx, passwd, passwdlen);
+            hmac_blake2561_update(&hctx, U, 32);
+            hmac_blake2561_final(&hctx, U);
 
             /* ... xor U_j ... */
             for (k = 0; k < 32; k++)
