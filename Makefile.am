@@ -80,9 +80,6 @@ cpuminer_SOURCES = \
   yescrypt/sha256_Y.c \
   yespower-1.0.1/sha256.c \
   yespower-1.0.1/yespower-opt.c \
-  yespower-1.0.1-blake256/sha256-b256.c \
-  yespower-1.0.1-blake256/yespower-opt-b256.c \
-  yespower-1.0.1-blake256/blake256.c \
   yespower-1.0.1-power2b/sha256-p2b.c \
   yespower-1.0.1-power2b/yespower-opt-p2b.c \
   yespower-1.0.1-power2b/blake2b.c \
@@ -159,7 +156,6 @@ cpuminer_SOURCES = \
   algo/xevan.c \
   algo/yescrypt.c \
   algo/yespower.c \
-  algo/yespowerR32.c \
   algo/zr5.c
 
 disable_flags =
