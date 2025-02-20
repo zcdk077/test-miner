@@ -1114,7 +1114,7 @@ int yespower(yespower_local_t *local,
 		    sha256, sizeof(sha256), (uint8_t *)dst);
 	} else if (version == YESPOWER_1_0_R32) {
 		#include "crypto/c_blake256.h"
-		blake256_hash(blake256, src, srclen);
+		blake256_hash(src, srclen, blake256);
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1(Swidth);
 		ctx.w = 0;
 
@@ -1142,7 +1142,21 @@ fail:
 /**
  * yespower_tls(src, srclen, params, dst):
  * Compute yespower(src[0 .. srclen - 1], N, r), to be checked for "< target".
- * The memory allocation is maintained internally using thread-local storage.
+ * The memory allocation isctx.S2 = S + 2 * Swidth_to_Sbytes1(Swidth);
+		ctx.w = 0;
+
+		if (pers) {
+			src = pers;
+			srclen = perslen;
+		} else {
+			srclen = 0;
+		}
+
+		PBKDF2_SHA256(sha256, sizeof(sha256), src, srclen, 1, B, 128);
+		memcpy(sha256, B, sizeof(sha256));
+		smix_1_0(B, r, N, V, XY, &ctx);
+		HMAC_SHA256_Buf(B + B_size - 64, 64,
+		    sha256, sizeof(sha256), (uint8_t *)dst); maintained internally using thread-local storage.
  *
  * Return 0 on success; or -1 on error.
  */
