@@ -25,15 +25,15 @@ extern "C" {
 #endif
 
 void blake256_init(state *S);
-void blake256_update(state *S, const uint8_t *in, uint64_t inlen);
-void blake256_final(state *S, uint8_t *out);
+void blake256_update(state *S, const uint8_t *data, uint64_t datalen);
+void blake256_final(state *S, uint8_t *digest);
 void blake256_hash(uint8_t *out, const uint8_t *in, uint64_t inlen);
 
 /* HMAC functions: */
 
 void hmac_blake256_init(hmac_state *S, const uint8_t *_key, uint64_t keylen);
-void hmac_blake256_update(hmac_state *S, const uint8_t *in, uint64_t inlen);
-void hmac_blake256_final(hmac_state *S, uint8_t *out);
+void hmac_blake256_update(hmac_state *S, const uint8_t *data, uint64_t datalen);
+void hmac_blake256_final(hmac_state *S, uint8_t *digest);
 void hmac_blake256_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const uint8_t *in, uint64_t inlen);
 
 void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
