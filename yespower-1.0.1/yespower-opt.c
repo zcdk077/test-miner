@@ -1079,9 +1079,10 @@ int yespower(yespower_local_t *local,
 	ctx.S0 = S;
 	ctx.S1 = S + Swidth_to_Sbytes1(Swidth);
 
-	SHA256_Buf(src, srclen, sha256);
+	// SHA256_Buf(src, srclen, sha256);
 
 	if (version == YESPOWER_0_5) {
+		SHA256_Buf(src, srclen, sha256);
 		PBKDF2_SHA256(sha256, sizeof(sha256), src, srclen, 1,
 		    B, B_size);
 		memcpy(sha256, B, sizeof(sha256));
@@ -1112,6 +1113,7 @@ int yespower(yespower_local_t *local,
 		smix_1_0(B, r, N, V, XY, &ctx);
 		hmac_blake256_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
 	} else {
+		SHA256_Buf(src, srclen, sha256);
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1(Swidth);
 		ctx.w = 0;
 
