@@ -328,7 +328,7 @@ void hmac_blake224_hash(uint8_t *out, const uint8_t *key, uint64_t keylen, const
 void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * salt,
   size_t saltlen, uint64_t c, uint8_t * buf, size_t dkLen)
 {
-    hmac_ctx PShctx, hctx;
+    hmac_state PShctx, hctx;
     size_t i;
     uint8_t ivec[4];
     uint8_t U[32];
@@ -338,8 +338,8 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
     size_t clen;
 
     /* Compute HMAC state after processing P and S. */
-    hmac_blake2561_init(&PShctx, passwd, passwdlen);
-    hmac_blake2561_update(&PShctx, salt, saltlen);
+    hmac_blake256_init(&PShctx, passwd, passwdlen);
+    hmac_blake256_update(&PShctx, salt, saltlen);
 
     /* Iterate through the blocks. */
     for (i = 0; i * 32 < dkLen; i++)
@@ -348,9 +348,9 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
         be32enc(ivec, (uint32_t)(i + 1));
 
         /* Compute U_1 = PRF(P, S || INT(i)). */
-        memcpy(&hctx, &PShctx, sizeof(hmac_ctx));
-        hmac_blake2561_update(&hctx, ivec, 4);
-        hmac_blake2561_final(&hctx, U);
+        memcpy(&hctx, &PShctx, sizeof(hmac_state));
+        hmac_blake256_update(&hctx, ivec, 4);
+        hmac_blake256_final(&hctx, U);
 
         /* T_i = U_1 ... */
         memcpy(T, U, 32);
@@ -358,9 +358,9 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
         for (j = 2; j <= c; j++)
         {
             /* Compute U_j. */
-            hmac_blake2561_init(&hctx, passwd, passwdlen);
-            hmac_blake2561_update(&hctx, U, 32);
-            hmac_blake2561_final(&hctx, U);
+            hmac_blake256_init(&hctx, passwd, passwdlen);
+            hmac_blake256_update(&hctx, U, 32);
+            hmac_blake256_final(&hctx, U);
 
             /* ... xor U_j ... */
             for (k = 0; k < 32; k++)
@@ -379,5 +379,5 @@ void pbkdf2_blake256(const uint8_t * passwd, size_t passwdlen, const uint8_t * s
     }
 
     /* Clean PShctx, since we never called _Final on it. */
-    memset(&PShctx, 0, sizeof(hmac_ctx));
+    memset(&PShctx, 0, sizeof(hmac_state));
 }
