@@ -23,7 +23,7 @@
     (p)[0] = (uint8_t)((v) >> 24); (p)[1] = (uint8_t)((v) >> 16); \
     (p)[2] = (uint8_t)((v) >>  8); (p)[3] = (uint8_t)((v)      );
 
-const uint8_t sigma[][16] =
+const uint8_t b256sigma[][16] =
 {
     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 },
     {14,10, 4, 8, 9,15,13, 6, 1,12, 0, 2,11, 7, 5, 3 },
@@ -41,7 +41,7 @@ const uint8_t sigma[][16] =
     { 7, 9, 3, 1,13,12,11,14, 2, 6, 5,10, 4, 0,15, 8 }
 };
 
-const uint32_t cst[16] =
+const uint32_t b256cst[16] =
 {
     0x243F6A88,0x85A308D3,0x13198A2E,0x03707344,
     0xA4093822,0x299F31D0,0x082EFA98,0xEC4E6C89,
@@ -60,11 +60,11 @@ void blake256_compress(blake256_ctx *ctx, const uint8_t *block)
     uint32_t v[16], m[16], i;
 #define ROT(x,n) (((x)<<(32-n))|((x)>>(n)))
 #define G(a,b,c,d,e)                                      \
-    v[a] += (m[sigma[i][e]] ^ cst[sigma[i][e+1]]) + v[b]; \
+    v[a] += (m[b256sigma[i][e]] ^ b256cst[b256sigma[i][e+1]]) + v[b]; \
     v[d] = ROT(v[d] ^ v[a],16);                           \
     v[c] += v[d];                                         \
     v[b] = ROT(v[b] ^ v[c],12);                           \
-    v[a] += (m[sigma[i][e+1]] ^ cst[sigma[i][e]])+v[b];   \
+    v[a] += (m[b256sigma[i][e+1]] ^ b256cst[b256sigma[i][e]])+v[b];   \
     v[d] = ROT(v[d] ^ v[a], 8);                           \
     v[c] += v[d];                                         \
     v[b] = ROT(v[b] ^ v[c], 7);
