@@ -116,7 +116,7 @@
 #include <string.h>
 
 #include "insecure_memzero-b256.h"
-#include "sph_types.h"
+#include "sha3/sph_types.h"
 #include "crypto/c_blake256.h"
 #include "sha256-b256.h"
 #include "sysendian-b256.h"
