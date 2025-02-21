@@ -1042,7 +1042,6 @@ int yespower(yespower_local_t *local,
 	salsa20_blk_t *V, *XY;
 	pwxform_ctx_t ctx;
 	uint8_t sha256[32];
-	uint8_t blake256[32];
 
 	/* Sanity-check parameters */
 	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0) ||
