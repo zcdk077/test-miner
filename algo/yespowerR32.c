@@ -11,14 +11,14 @@ void yespowerR32_hash( const char *input, char *output, uint32_t len )
 {
     static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 8, NULL, 0};
     yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &v1, (yespower_binary_t_b256dme*)output );
-    static yespower_params_t params = {
+    static yespower_params_t yespower_params = {
         .version = YESPOWER_1_0,
         .N = 2048,
         .r = 32,
         .pers = NULL,
         .perslen = 0
     };
-    yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &params, (yespower_binary_t_b256dme*)output );
+    yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &yespower_params, (yespower_binary_t_b256dme*)output );
 }
 
 int scanhash_yespowerR32( int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done )
@@ -37,7 +37,7 @@ int scanhash_yespowerR32( int thr_id, struct work *work, uint32_t max_nonce, uin
 
         do {
                 be32enc(&endiandata[19], n);
-                power2b_hash((char*) endiandata, (char*) vhash, 80);
+                yespowerR32_hash((char*) endiandata, (char*) vhash, 80);
                 if (vhash[7] < Htarg && fulltest(vhash, ptarget)) {
                         work_set_target_ratio( work, vhash );
                         *hashes_done = n - first_nonce + 1;
