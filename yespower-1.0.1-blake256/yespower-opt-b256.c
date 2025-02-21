@@ -50,15 +50,36 @@
  * XOP, some slowdown is sometimes observed on Intel CPUs with AVX.
  */
 #ifdef __XOP__
+#ifdef __GNUC__
 #warning "Note: XOP is enabled.  That's great."
+#else
+#pragma NOTE("Note: XOP is enabled.  That's great.")
+#endif
+//
 #elif defined(__AVX__)
+#ifdef __GNUC__
 #warning "Note: AVX is enabled.  That's OK."
+#else
+#pragma message("Note: AVX is enabled.  That's OK.")
+#endif
 #elif defined(__SSE2__)
+#ifdef __GNUC__
 #warning "Note: AVX and XOP are not enabled.  That's OK."
+#else
+#pragma message("Note: AVX and XOP are not enabled.  That's OK.")
+#endif
 #elif defined(__x86_64__) || defined(__i386__)
+#ifdef __GNUC__
 #warning "SSE2 not enabled.  Expect poor performance."
 #else
+#pragma message("SSE2 not enabled.  Expect poor performance.")
+#endif
+#else
+#ifdef __GNUC__
 #warning "Note: building generic code for non-x86.  That's OK."
+#else
+#pragma message("Note: building generic code for non-x86.  That's OK.")
+#endif
 #endif
 
 /*
@@ -95,7 +116,7 @@
 #include <string.h>
 
 #include "insecure_memzero-b256.h"
-#include "blake256.h"
+#include "sha3/blake256.h"
 #include "sha256-b256.h"
 #include "sysendian-b256.h"
 
@@ -1046,7 +1067,7 @@ int yespower_b256dme(yespower_local_t *local,
 	uint8_t blake256[32];
 
 	/* Sanity-check parameters */
-	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0 && version != YESPOWER_1_0_BLAKE256) ||
+	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0) ||
 	    N < 1024 || N > 512 * 1024 || r < 8 || r > 32 ||
 	    (N & (N - 1)) != 0 ||
 	    (!pers && perslen)) {
@@ -1061,11 +1082,7 @@ int yespower_b256dme(yespower_local_t *local,
 		XY_size = B_size * 2;
 		Swidth = Swidth_0_5;
 		ctx.Sbytes = 2 * Swidth_to_Sbytes1_B256dme(Swidth);
-	} else if (version == YESPOWER_1_0) {
-		XY_size = B_size + 64;
-		Swidth = Swidth_1_0;
-		ctx.Sbytes = 3 * Swidth_to_Sbytes1_B256dme(Swidth);
-	} else if (version == YESPOWER_1_0_BLAKE256) {
+	} else {
 		XY_size = B_size + 64;
 		Swidth = Swidth_1_0;
 		ctx.Sbytes = 3 * Swidth_to_Sbytes1_B256dme(Swidth);
@@ -1100,25 +1117,8 @@ int yespower_b256dme(yespower_local_t *local,
 			    sha256);
 			SHA256_Buf(sha256, sizeof(sha256), (uint8_t *)dst);
 		}
-	} else if (version == YESPOWER_1_0) {
-		SHA256_Buf(src, srclen, sha256);
-		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256dme(Swidth);
-		ctx.w = 0;
-
-		if (pers) {
-			src = pers;
-			srclen = perslen;
-		} else {
-			srclen = 0;
-		}
-
-		PBKDF2_SHA256_B256DME(sha256, sizeof(sha256), src, srclen, 1, B, 128);
-		memcpy(sha256, B, sizeof(sha256));
-		smix_1_0_b256dme(B, r, N, V, XY, &ctx);
-		HMAC_SHA256_Buf_B256dme(B + B_size - 64, 64,
-		    sha256, sizeof(sha256), (uint8_t *)dst);
-	} else if (version == YESPOWER_1_0_BLAKE256) {
-		blake2561_hash(blake256, src, srclen);
+	} else {
+		blake256_hash(src, srclen, blake256);
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1_B256dme(Swidth);
 		ctx.w = 0;
 
@@ -1132,7 +1132,7 @@ int yespower_b256dme(yespower_local_t *local,
 		pbkdf2_blake256(blake256, sizeof(blake256), src, srclen, 1, B, 128);
 		memcpy(blake256, B, sizeof(blake256));
 		smix_1_0_b256dme(B, r, N, V, XY, &ctx);
-		hmac_blake2561_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
+		hmac_blake256_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
 	}
 
 	/* Success! */
