@@ -1045,7 +1045,7 @@ int yespower(yespower_local_t *local,
 	uint8_t blake256[32];
 
 	/* Sanity-check parameters */
-	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0 && version != YESPOWER_1_0_R32) ||
+	if ((version != YESPOWER_0_5 && version != YESPOWER_1_0) ||
 	    N < 1024 || N > 512 * 1024 || r < 8 || r > 32 ||
 	    (N & (N - 1)) != 0 ||
 	    (!pers && perslen)) {
@@ -1064,10 +1064,6 @@ int yespower(yespower_local_t *local,
 		XY_size = B_size + 64;
 		Swidth = Swidth_1_0;
 		ctx.Sbytes = 3 * Swidth_to_Sbytes1(Swidth);
-	} else if (version == YESPOWER_1_0_R32) {
-		XY_size = B_size + 64;
-		Swidth = Swidth_1_0;
-		ctx.Sbytes = 3 * Swidth_to_Sbytes1(Swidth);
 	}
 	need = B_size + V_size + XY_size + ctx.Sbytes;
 	if (local->aligned_size < need) {
@@ -1083,10 +1079,9 @@ int yespower(yespower_local_t *local,
 	ctx.S0 = S;
 	ctx.S1 = S + Swidth_to_Sbytes1(Swidth);
 
-	// SHA256_Buf(src, srclen, sha256);
+	SHA256_Buf(src, srclen, sha256);
 
 	if (version == YESPOWER_0_5) {
-		SHA256_Buf(src, srclen, sha256);
 		PBKDF2_SHA256(sha256, sizeof(sha256), src, srclen, 1,
 		    B, B_size);
 		memcpy(sha256, B, sizeof(sha256));
@@ -1099,8 +1094,7 @@ int yespower(yespower_local_t *local,
 			    sha256);
 			SHA256_Buf(sha256, sizeof(sha256), (uint8_t *)dst);
 		}
-	} else if (version == YESPOWER_1_0) {
-		SHA256_Buf(src, srclen, sha256);
+	} else {
 		ctx.S2 = S + 2 * Swidth_to_Sbytes1(Swidth);
 		ctx.w = 0;
 
@@ -1116,23 +1110,6 @@ int yespower(yespower_local_t *local,
 		smix_1_0(B, r, N, V, XY, &ctx);
 		HMAC_SHA256_Buf(B + B_size - 64, 64,
 		    sha256, sizeof(sha256), (uint8_t *)dst);
-	} else if (version == YESPOWER_1_0_R32) {
-		#include "crypto/c_blake256.h"
-		blake256_hash(src, srclen, blake256);
-		ctx.S2 = S + 2 * Swidth_to_Sbytes1(Swidth);
-		ctx.w = 0;
-
-		if (pers) {
-			src = pers;
-			srclen = perslen;
-		} else {
-			srclen = 0;
-		}
-
-		pbkdf2_blake256(blake256, sizeof(blake256), src, srclen, 1, B, 128);
-		memcpy(blake256, B, sizeof(blake256));
-		smix_1_0(B, r, N, V, XY, &ctx);
-		hmac_blake256_hash((uint8_t *)dst, B + B_size - 64, 64, blake256, sizeof(blake256));
 	}
 
 	/* Success! */
