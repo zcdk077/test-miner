@@ -11,6 +11,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+
+#include "sysendian.h"
 #include "c_blake256.h"
 
 #define U8TO32(p) \
