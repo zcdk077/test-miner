@@ -13,8 +13,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "sha3/sph_types.h"
-#include "sysendian.h"
 #include "c_blake256.h"
 
 #define U8TO32(p) \
