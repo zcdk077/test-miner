@@ -17,7 +17,7 @@ void printArray(const uint8_t* array, size_t length) {
 }
 
 inline void y_slow_hash(const void* data, size_t length, const uint8_t* input, uint8_t* output) {
-    static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 8, NULL, 0};
+    static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 32, NULL, 0};
     yespower_params_t_b256dme params = {
         .version = YESPOWER_1_0,
         .N = 2048,
