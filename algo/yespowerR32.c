@@ -1,13 +1,36 @@
 #include "cpuminer-config.h"
 #include "miner.h"
 
+#include "yespowerR32.h"
 #include "yespower-1.0.1-blake256/yespower-b256.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
 
-void yespowerR32_hash( const char *input, char *output, uint32_t len )
+void printArray(const uint8_t* array, size_t length) {
+    printf("input:");
+    for (size_t i = 0; i < length; i++) {
+        printf("%02x", array[i]);  // Printing each element of the array in hexadecimal format.
+    }
+    printf("\n");
+}
+
+inline void y_slow_hash(const void* data, size_t length, const uint8_t* input, uint8_t* output) {
+    static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 8, NULL, 0};
+    yespower_params_t_b256dme params = {
+        .version = YESPOWER_1_0,
+        .N = 2048,
+        .r = 32,
+        .pers = NULL,
+        .perslen = 0
+    };
+    if (yespower_tls_b256dme((unsigned char *)data, length, &v1, (yespower_binary_t_b256dme*)output)) {
+        
+    }
+}
+
+/* void yespowerR32_hash( const char *input, char *output, uint32_t len )
 {
     static const yespower_params_t v1 = {YESPOWER_1_0, 2048, 8, NULL, 0};
     yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &v1, (yespower_binary_t_b256dme*)output );
@@ -19,6 +42,15 @@ void yespowerR32_hash( const char *input, char *output, uint32_t len )
         .perslen = 0
     };
     yespower_tls_b256dme( (yespower_binary_t_b256dme*)input, len, &yespower_params, (yespower_binary_t_b256dme*)output );
+} */
+
+void yespowerR32_hash(const char* input, char* output, uint32_t len)
+{
+    uint8_t hash[32];
+    uint8_t hashA[32];
+
+    y_slow_hash(input, len,  hash, hashA);
+    memcpy(output, hashA, 32);
 }
 
 int scanhash_yespowerR32( int thr_id, struct work *work, uint32_t max_nonce, uint64_t *hashes_done )
